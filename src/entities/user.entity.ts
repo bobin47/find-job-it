@@ -1,4 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -6,19 +11,25 @@ export class User {
   id: number;
 
   @Column()
-  first_Name: string;
+  first_name: string;
 
   @Column()
-  last_Name: string;
-
-  @Column()
-  password: string;
+  last_name: string;
 
   @Column()
   email: string;
 
   @Column()
-  name: string;
+  password: string;
+
+  @Column()
+  refresh_token: string;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @CreateDateColumn()
+  updated_at: Date;
 
   @Column({ default: 1 })
   status: number;
