@@ -22,7 +22,7 @@ export class User {
   @Column()
   password: string;
 
-  @Column()
+  @Column({ nullable: true, default: null })
   refresh_token: string;
 
   @CreateDateColumn()
