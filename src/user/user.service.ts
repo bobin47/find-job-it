@@ -1,15 +1,12 @@
 import { UpdateUserDto } from './dto/update-user.dto';
-import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository, UpdateResult } from 'typeorm';
+import { Like, Repository, UpdateResult } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { FilterUserDto } from './dto/filter-user.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Injectable()
 export class UserService {
@@ -17,8 +14,20 @@ export class UserService {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  async findAll() {
-    return this.userRepository.find({
+  async findAll(query: FilterUserDto) {
+    const limit = Number(query.limit) || 10;
+    const page = Number(query.page) || 1;
+    const skip = (page - 1) * limit;
+    const keyword = query.search || '';
+    const [res, total] = await this.userRepository.findAndCount({
+      where: [
+        { email: Like('%' + keyword + '%') },
+        { first_name: Like('%' + keyword + '%') },
+        { last_name: Like('%' + keyword + '%') },
+      ],
+      order: { created_at: 'DESC' },
+      take: limit,
+      skip,
       select: [
         'id',
         'email',
@@ -29,6 +38,18 @@ export class UserService {
         'updated_at',
       ],
     });
+    const lastPage = Math.ceil(total / limit);
+    const nextPage = page + 1 > lastPage ? null : page + 1;
+    const prevPage = page - 1 < 1 ? null : page - 1;
+
+    return {
+      date: res,
+      total,
+      currentPage: page,
+      lastPage,
+      nextPage,
+      prevPage,
+    };
   }
 
   async findOne(id: number) {
