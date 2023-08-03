@@ -6,7 +6,6 @@ import { Like, Repository, UpdateResult } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { FilterUserDto } from './dto/filter-user.dto';
-import { ApiTags } from '@nestjs/swagger';
 
 @Injectable()
 export class UserService {
@@ -86,5 +85,9 @@ export class UserService {
 
   async delete(id: number) {
     return this.userRepository.delete(id);
+  }
+
+  async updateAvatar(id: number, avatar: string) {
+    return await this.userRepository.update(id, { avatar });
   }
 }
