@@ -32,12 +32,18 @@ export class PostsService {
     const limit = Number(filterPostDto.limit) || 10;
     const page = Number(filterPostDto.page) || 1;
     const search = filterPostDto.search || '';
+    const category = Number(filterPostDto.category) || null;
     const skip = (page - 1) * limit;
     const [res, total] = await this.postRepository.findAndCount({
       relations: {
         user: true,
+        category: true,
       },
       select: {
+        category: {
+          id: true,
+          name: true,
+        },
         user: {
           id: true,
           email: true,
@@ -52,9 +58,15 @@ export class PostsService {
       where: [
         {
           title: Like('%' + search + '%'),
+          category: {
+            id: category,
+          },
         },
         {
           description: Like('%' + search + '%'),
+          category: {
+            id: category,
+          },
         },
       ],
       skip,
