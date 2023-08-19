@@ -8,6 +8,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -90,13 +91,36 @@ export class AuthService {
       secret: this.configService.get<string>('SECRET'),
       expiresIn: this.configService.get<string>('EXP_IN_REFRESH_TOKEN'),
     });
+    const user = await this.userRepository.findOne({
+      where: {
+        id: payload.id,
+      },
+    });
 
     await this.userRepository.update(
       { email: payload.email },
       { refresh_token },
     );
 
-    return { access_token, refresh_token };
+    const data = {
+      access_token,
+      refresh_token,
+      user: {
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        avatar: user.avatar,
+      },
+    };
+
+    return {
+      res: {
+        data,
+        status: 200,
+        message: 'Ok',
+      },
+    };
   }
 
   async handleHashPassword(password: string): Promise<string> {

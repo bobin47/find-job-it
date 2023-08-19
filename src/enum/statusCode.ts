@@ -1,0 +1,9 @@
+export enum StatusType {
+  SUCCESS = '0',
+  DB_CONN_ISSUE = '1',
+  HOST_NOT_AVAILABLE = '2',
+  INTERNAL_SYSTEM_ERROR = '3',
+  API_OBSOLETE = '4',
+  MATCHING_DATA_NOT_FOUND = '5',
+  MISSING_PARAMS = '11',
+}
