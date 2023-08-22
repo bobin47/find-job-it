@@ -9,6 +9,7 @@ import {
   Put,
   Query,
   Req,
+  SetMetadata,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -22,43 +23,44 @@ import { ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { storageConfig } from 'hepler/config';
 import { extname } from 'path';
+import { Role } from 'src/auth/decorator/role.decorator';
 
 @ApiTags('Users')
 @Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @UseGuards(AuthGuard)
+  @Role('Admin')
   @Get()
   findAll(@Query() query: FilterUserDto) {
     return this.userService.findAll(query);
   }
 
-  @UseGuards(AuthGuard)
   @Get(':id')
+  @Role('User', 'Admin')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
 
-  @UseGuards(AuthGuard)
+  @Role('Admin')
   @Post('create')
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
-  @UseGuards(AuthGuard)
+  @Role('Admin')
   @Put(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
   }
 
-  @UseGuards(AuthGuard)
+  @Role('Admin')
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.userService.delete(+id);
   }
 
-  @UseGuards(AuthGuard)
+  @Role('User', 'Admin')
   @Post('upload-avatar')
   @UseInterceptors(
     FileInterceptor('avatar', {

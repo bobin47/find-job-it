@@ -35,6 +35,7 @@ export class UserService {
         'status',
         'created_at',
         'updated_at',
+        'roles',
       ],
     });
 
@@ -43,7 +44,7 @@ export class UserService {
     const prevPage = page - 1 < 1 ? null : page - 1;
 
     return {
-      date: res,
+      data: res,
       total,
       currentPage: page,
       lastPage,
@@ -71,21 +72,35 @@ export class UserService {
     }
 
     const hashPassword = await bcrypt.hash(createUserDto.password, 10);
-    return await this.userRepository.save({
+    const user = await this.userRepository.save({
       ...createUserDto,
       password: hashPassword,
     });
+    return {
+      status:200,
+      message:"Create OK",
+      user
+    }
   }
 
-  async update(
-    id: number,
-    updateUserDto: UpdateUserDto,
-  ): Promise<UpdateResult> {
-    return await this.userRepository.update(id, updateUserDto);
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<any> {
+    const res = await this.userRepository.update(id, updateUserDto);
+    if (res.affected > 0) {
+      return {
+        status: 200,
+        message: 'Cap nhat thanh cong',
+      };
+    }
   }
 
   async delete(id: number) {
-    return this.userRepository.delete(id);
+    const res = await this.userRepository.delete(id);
+    if (res.affected > 0) {
+      return {
+        status: 200,
+        message: 'Cap nhat thanh cong',
+      };
+    }
   }
 
   async updateAvatar(id: number, avatar: string) {

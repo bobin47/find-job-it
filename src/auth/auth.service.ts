@@ -8,7 +8,6 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -18,6 +17,16 @@ export class AuthService {
   ) {}
 
   async register(registerUserDto: RegisterUserDto): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: {
+        email: registerUserDto.email,
+      },
+    });
+
+    if (user) {
+      throw new HttpException('Username already exists', HttpStatus.CONFLICT);
+    }
+
     const hashPassword = await this.handleHashPassword(
       registerUserDto.password,
     );
@@ -111,6 +120,7 @@ export class AuthService {
         last_name: user.last_name,
         email: user.email,
         avatar: user.avatar,
+        roles: user.roles,
       },
     };
 
