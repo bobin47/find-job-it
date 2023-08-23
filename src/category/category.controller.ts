@@ -1,5 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { CategoryService } from './category.service';
+import { CreateCategoryDto } from './dto/createCategory.dto';
+import { EditCategoryDto } from './dto/editCategory.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -7,5 +9,20 @@ export class CategoryController {
   @Get()
   findAll() {
     return this.categoryService.findAll();
+  }
+
+  @Post('create')
+  create(@Body() categoryDto: CreateCategoryDto) {
+    return this.categoryService.create(categoryDto);
+  }
+
+  @Post(':id')
+  update(@Param('id') id: string, @Body() editCategoryDto: EditCategoryDto) {
+    return this.categoryService.update(+id, editCategoryDto);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.categoryService.delete(+id);
   }
 }
