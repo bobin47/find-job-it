@@ -21,6 +21,8 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { extname } from 'path';
 import { FilterPostDto } from './dto/filter-post';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { Role } from 'src/auth/decorator/role.decorator';
+import { Public } from 'src/auth/decorator/public.decorator';
 
 @Controller('posts')
 export class PostsController {
@@ -28,6 +30,7 @@ export class PostsController {
 
   @UseGuards(AuthGuard)
   @Post()
+  @Role('Admin', 'User')
   @UseInterceptors(
     FileInterceptor('thumbnail', {
       storage: storageConfig('post'),
@@ -66,21 +69,24 @@ export class PostsController {
 
     return this.postsService.create(req['user_date'].id, {
       ...createPostDto,
-      thumbnail: file.destination + '/' + file.originalname,
+      thumbnail: file.destination.split('upload/')[1] + '/' + file.filename,
     });
   }
 
   @Get()
+  @Public()
   findAll(@Query() filterPostDto: FilterPostDto) {
     return this.postsService.findAll(filterPostDto);
   }
 
   @Get(':id')
+  @Public()
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(+id);
   }
 
   @Put(':id')
+  @Role('Admin', 'User')
   @UseInterceptors(
     FileInterceptor('thumbnail', {
       storage: storageConfig('post'),
@@ -116,14 +122,22 @@ export class PostsController {
     }
 
     if (file) {
-      updatePostDto.thumbnail = file.destination + '/' + file.originalname;
+      updatePostDto.thumbnail =
+        file.destination.split('upload/')[1] + '/' + file.filename;
     }
 
     return this.postsService.update(+id, updatePostDto);
   }
 
   @Delete(':id')
+  @Role('Admin', 'User')
   delete(@Param('id') id: string) {
     return this.postsService.delete(+id);
+  }
+
+  @Role('Admin', 'User')
+  @Get('user/:email')
+  getPostWithUserId(@Param() email: any) {
+    return this.postsService.getPostWithIdUser(email);
   }
 }

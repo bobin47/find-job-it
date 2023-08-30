@@ -77,18 +77,20 @@ export class UserService {
       password: hashPassword,
     });
     return {
-      status:200,
-      message:"Create OK",
-      user
-    }
+      status: 200,
+      message: 'Create OK',
+      user,
+    };
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<any> {
     const res = await this.userRepository.update(id, updateUserDto);
+    const user = await this.userRepository.findOneBy({ id });
     if (res.affected > 0) {
       return {
         status: 200,
         message: 'Cap nhat thanh cong',
+        user,
       };
     }
   }

@@ -22,7 +22,12 @@ export class PostsService {
         ...createPostDto,
         user,
       });
-      return await this.postRepository.findOneBy({ id: res.id });
+      const post = await this.postRepository.findOneBy({ id: res.id });
+      return {
+        status: 200,
+        message: 'OK',
+        post,
+      };
     } catch (error) {
       throw new HttpException('Can not create post', HttpStatus.BAD_REQUEST);
     }
@@ -53,7 +58,7 @@ export class PostsService {
         },
       },
       order: {
-        created_at: 'DESC',
+        created_at: 'ASC',
       },
       where: [
         {
@@ -104,10 +109,38 @@ export class PostsService {
   }
 
   async update(id: number, updatePostDto: UpdatePostDto) {
-    return await this.postRepository.update(id, updatePostDto);
+    const res = await this.postRepository.update(id, updatePostDto);
+    if (res.affected > 0) {
+      return {
+        status: 200,
+        message: 'OK!',
+      };
+    }
   }
 
   async delete(id: number) {
-    return await this.postRepository.delete(id);
+    const res = await this.postRepository.delete(id);
+    if (res.affected > 0) {
+      return {
+        status: 200,
+        message: 'OK!',
+      };
+    }
+  }
+
+  async getPostWithIdUser(email: any) {
+    console.log(email)
+    const posts = await this.postRepository.find({
+      relations: {
+        user: true,
+        category:true
+      },
+      where: {
+        user: {
+          email:email.email
+        },
+      },
+    });
+    return posts;
   }
 }
