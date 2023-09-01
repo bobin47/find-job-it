@@ -48,7 +48,7 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Role('Admin')
+  @Role('Admin','User')
   @Put(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
@@ -94,7 +94,7 @@ export class UserController {
       throw new BadRequestException('File is required');
     }
    
-    this.userService.updateAvatar(
+   return this.userService.updateAvatar(
       req.user_date.id,
       file.destination.split('upload/')[1] + '/' + file.filename
     );

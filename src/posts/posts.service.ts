@@ -129,15 +129,14 @@ export class PostsService {
   }
 
   async getPostWithIdUser(email: any) {
-    console.log(email)
     const posts = await this.postRepository.find({
       relations: {
         user: true,
-        category:true
+        category: true,
       },
       where: {
         user: {
-          email:email.email
+          email: email.email,
         },
       },
     });

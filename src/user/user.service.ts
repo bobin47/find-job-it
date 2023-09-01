@@ -106,6 +106,8 @@ export class UserService {
   }
 
   async updateAvatar(id: number, avatar: string) {
-    return await this.userRepository.update(id, { avatar });
+    await this.userRepository.update(id, { avatar });
+    const user = await this.userRepository.findOneBy({ id });
+    return user
   }
 }

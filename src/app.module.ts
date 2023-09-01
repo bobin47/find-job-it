@@ -12,6 +12,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { RoleGuard } from './auth/role.guard';
 import { AuthGuard } from './auth/auth.guard';
 import { User } from './user/entities/user.entity';
+import { CompanyModule } from './company/company.module';
+import { JobModule } from './job/job.module';
+import { ResumeModule } from './resume/resume.module';
 
 @Module({
   imports: [
@@ -21,7 +24,10 @@ import { User } from './user/entities/user.entity';
     ConfigModule.forRoot(),
     PostsModule,
     CategoryModule,
-    TypeOrmModule.forFeature([User])
+    TypeOrmModule.forFeature([User]),
+    CompanyModule,
+    JobModule,
+    ResumeModule
   ],
   controllers: [AppController],
   providers: [
