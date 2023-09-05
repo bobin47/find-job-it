@@ -25,10 +25,15 @@ import { Public } from 'src/auth/decorator/public.decorator';
 export class CompanyController {
   constructor(private companyService: CompanyService) {}
 
-  @Get()
   @Public()
-  findAll(@Query() query:FilterCompanyDto){
-    console.log(query)
+  @Get('')
+  findAll(@Param() query:FilterCompanyDto){
+    return this.companyService.findAll(query)
+  }
+
+  @Public()
+  @Get('all')
+  findAllTest(@Query() query:FilterCompanyDto){
     return this.companyService.findAll(query)
   }
 

@@ -18,8 +18,10 @@ export class CompanyService {
       const page = Number(query.page) || 1;
       const skip = (page - 1) * 10;
       const keyword = query.search || '';
-
       const [res, total] = await this.companyRepository.findAndCount({
+        relations: {
+          jobs: true,
+        },
         where: [
           {
             name: Like('%' + keyword + '%'),
@@ -56,10 +58,21 @@ export class CompanyService {
 
   async findOne(id: number) {
     try {
-      const company = await this.companyRepository.findOneBy({ id });
-      return {
-        company,
-      };
+      // const company = await this.companyRepository.findOneBy({ id });
+      // return {
+      //   company,
+      // };
+
+      const res = await this.companyRepository.find({
+        relations: {
+          jobs: true,
+        },
+        where: {
+          id,
+        },
+      });
+
+      return res;
     } catch (error) {}
   }
 

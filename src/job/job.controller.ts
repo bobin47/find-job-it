@@ -7,21 +7,25 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CreateJobDto } from './dto/create-job.dto';
 import { UpdateJobDto } from './dto/update-job.dto';
 import { FilterDto } from './dto/filter-job.dto';
+import { Public } from 'src/auth/decorator/public.decorator';
 
 @Controller('job')
 export class JobController {
   constructor(private jobService: JobService) {}
 
   @Get()
-  findAll(@Param() filter:FilterDto) {
+  @Public()
+  findAll(@Query() filter:FilterDto) {
     return this.jobService.findAll(filter)
   }
 
   @Get('/:id')
+  @Public()
   findOne(@Param('id') id: number,) {
     return this.jobService.findOne(id)
   }

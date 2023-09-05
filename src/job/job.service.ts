@@ -20,6 +20,7 @@ export class JobService {
     const skip = (page - 1) * 10;
     const keyword = query.search || '';
     const [res, total] = await this.jobRepository.findAndCount({
+      
       where: [
         {
           name: Like('%' + keyword + '%'),
@@ -36,10 +37,16 @@ export class JobService {
         'salary',
         'created_at',
         'updated_at',
+        'startDate',
+        'endDate',
+        'skill',
+        'quantity',
+        'level',
       ],
-      relations:{
-        company:true
-      }
+      relations: {
+        company: true,
+        resume:true
+      },
     });
 
     const lastPage = Math.ceil(total / limit);
@@ -57,15 +64,20 @@ export class JobService {
   }
 
   async create(createJob: CreateJobDto) {
+    const idCompany = createJob.company.id;
     const company = await this.companyRepository.findOneBy({
-      id: createJob.company.id,
+      id: idCompany,
     });
+    // console.log(createJob)
+    console.log(company);
     try {
       console.log(createJob);
       const res = await this.jobRepository.save({
         ...createJob,
         company,
       });
+
+      console.log(res);
       const job = await this.jobRepository.findOneBy({ id: res.id });
       return {
         message: 'OK',
@@ -79,6 +91,7 @@ export class JobService {
 
   async update(id: number, updateJob: UpdateJobDto) {
     try {
+      console.log(id, updateJob);
       const res = await this.jobRepository.update(id, updateJob);
       if (res.affected > 0) {
         return {
@@ -86,7 +99,9 @@ export class JobService {
           status: 200,
         };
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async delete(id: number) {
